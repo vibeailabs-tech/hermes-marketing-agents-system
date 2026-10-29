@@ -79,7 +79,40 @@ cp -R 00-marketing-orchestrator 01-content-research 02-marketing-copywriting 03-
 for s in 00-marketing-orchestrator 01-content-research 02-marketing-copywriting 03-marketing-strategy 04-data-visualization 05-landing-page-audit; do zip -r "$s.zip" "$s"; done
 ```
 
-### Biến cả hệ thống Hermes thành đội marketing (khuyên dùng)
+### Cài lên Hermes Agent trên VPS (khuyên dùng)
+
+Biến toàn bộ Hermes trên VPS thành đội marketing: danh tính "Trưởng phòng Marketing AI", 6 skill marketing, gỡ bộ skill mặc định để Hermes chỉ làm việc marketing. Chạy trên VPS (SSH vào, hoặc trong container nếu Hermes chạy bằng Docker):
+
+```bash
+git clone https://github.com/vibeailabs-tech/hermes-marketing-agents-system.git
+cd hermes-marketing-agents-system
+bash 07-hermes/install.sh --current --only-marketing
+```
+
+Không muốn SSH? Dán tin nhắn này vào chat với Hermes trên VPS. Hermes sẽ tự chạy lệnh bằng terminal của nó:
+
+```
+Chạy trong terminal rồi báo kết quả:
+cd ~ && (git clone https://github.com/vibeailabs-tech/hermes-marketing-agents-system.git || git -C hermes-marketing-agents-system pull) && bash hermes-marketing-agents-system/07-hermes/install.sh --current --only-marketing
+```
+
+Script tự tìm thư mục Hermes đang chạy (ví dụ `/data/.hermes`) và làm 4 việc:
+
+1. Cài 6 skill vào `<thư mục Hermes>/skills/marketing/`, bỏ tiền tố số khỏi tên thư mục.
+2. Sao lưu `SOUL.md` cũ thành `SOUL.md.bak-<thời gian>`, rồi thay bằng [`07-hermes/SOUL.md`](07-hermes/SOUL.md).
+3. Chạy `hermes skills opt-out --remove`: gỡ các skill mặc định bạn chưa sửa và chặn Hermes cài lại chúng khi cập nhật. Skill bạn đã sửa hoặc tự cài được giữ nguyên. Bỏ `--only-marketing` nếu muốn giữ bộ skill mặc định.
+4. Đặt tối đa 5 subagent chạy song song và giao việc một tầng.
+
+Sau khi cài, **mở phiên chat mới** (trên Telegram/Discord/Slack gõ `/new`) vì Hermes chỉ đọc `SOUL.md` lúc bắt đầu phiên. Nếu gateway chưa nhận skill mới thì chạy `hermes gateway restart`.
+
+| Việc | Lệnh trên VPS |
+|------|---------------|
+| Kiểm tra skill | `hermes skills list \| grep marketing` (đủ 6 dòng) |
+| Cập nhật sau khi sửa repo | `cd hermes-marketing-agents-system && git pull && bash 07-hermes/install.sh --current --only-marketing` |
+| Khôi phục danh tính cũ | `cp <thư mục Hermes>/SOUL.md.bak-<thời gian> <thư mục Hermes>/SOUL.md` |
+| Lấy lại bộ skill mặc định | `hermes skills opt-in --sync` |
+
+### Tạo profile marketing riêng (giữ nguyên Hermes gốc)
 
 Cách này tạo một **profile Hermes riêng** tên `marketing`. Profile là một bản Hermes độc lập, có cấu hình, bộ nhớ, skill và danh tính riêng. Profile này chỉ chứa 6 skill marketing cùng skill hệ thống bắt buộc `hermes-agent` (không nạp khoảng 100 skill mặc định còn lại), và danh tính của nó là "Trưởng phòng Marketing AI" nên mọi yêu cầu đều đi qua `marketing-orchestrator`. Hermes gốc của bạn không bị đụng tới.
 
@@ -210,7 +243,7 @@ Với Claude Code, sau khi thêm server OAuth hãy chạy `/mcp` trong phiên v�
 ├── 06-brand-context/
 │   └── brand-guide.md              # Mẫu ngữ cảnh thương hiệu dùng chung (không phải skill)
 └── 07-hermes/                      # Không phải skill
-    ├── install.sh                  # Cài đội marketing thành profile Hermes riêng
+    ├── install.sh                  # Cài lên Hermes (--current: profile đang chạy; mặc định: profile riêng)
     ├── distribution.yaml           # Manifest profile distribution của Hermes
     ├── SOUL.md                     # Danh tính "Trưởng phòng Marketing AI"
     ├── config.example.yaml         # Cấu hình mẫu khi cài vào Hermes hiện có
