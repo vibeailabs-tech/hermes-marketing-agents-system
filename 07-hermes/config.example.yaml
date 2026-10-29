@@ -1,0 +1,18 @@
+# Đoạn cấu hình mẫu cho Hermes Agent.
+# Gộp các mục dưới đây vào ~/.hermes/config.yaml (không ghi đè toàn bộ file).
+
+skills:
+  # Chỉ cần nếu bạn cài skill ở ~/.agents/skills (dùng chung với Codex/Devin)
+  # thay vì chép vào ~/.hermes/skills/.
+  external_dirs:
+    - ~/.agents/skills
+
+delegation:
+  # Số subagent chạy song song tối đa trong một lần giao việc (mặc định 10).
+  # Đội marketing hiếm khi cần quá 5; đặt thấp hơn để kiểm soát chi phí.
+  max_concurrent_children: 5
+  # Số lượt tối đa của mỗi subagent (mặc định 250).
+  max_iterations: 250
+  # Giữ 1 (giao việc phẳng: điều phối viên -> subagent). Orchestrator không cần
+  # điều phối lồng nhiều tầng.
+  max_spawn_depth: 1

@@ -1,0 +1,9 @@
+name: marketing
+version: 1.0.0
+description: Đội agent marketing của Vibe AI Labs - Hermes đóng vai trưởng phòng điều phối 5 skill nghiên cứu, chiến lược, viết nội dung, dashboard và audit landing page.
+hermes_requires: ">=0.22.0"
+author: Vibe AI Labs
+distribution_owned:
+  - SOUL.md
+  - skills
+  - .no-bundled-skills
